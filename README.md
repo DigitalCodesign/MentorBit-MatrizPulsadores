@@ -1,133 +1,87 @@
+
 # MentorBit-MatrizPulsadores
 
-Esta librería está construida por Digital Codesign para utilizar el módulo de matriz de pulsadores de MentorBit.
+Esta librería está específicamente diseñada para ser utilizada junto con el módulo de matriz de pulsadores de MentorBit.
 
-Puedes encontrar el MentorBit y mucho más material de electrónica y robótica en nuestra tienda oficial: [https://digitalcodesign.com/shop](https://digitalcodesign.com/shop)
+Repositorio: [https://github.com/DigitalCodesign/MentorBit-MatrizPulsadores](https://github.com/DigitalCodesign/MentorBit-MatrizPulsadores)
 
-## Modo de empleo
+## Descripción
 
-Una vez tengamos la librería instalada desde el Arduino IDE, tenemos que incluir la librería con la siguiente línea:
+La librería permite interactuar con el módulo de matriz de pulsadores de MentorBit, gestionando el estado de los pulsadores, configurando interrupciones y gestionando eventos de los botones.
 
-```
-#include <MentorBitMatrizPulsadores.h>
-```
+## Métodos Principales
 
-### Constructor
-
-Una vez incluida la librería, usamos el constructor para crear el objeto del módulo de la matriz de pulsadores:
-
-```
-MentorBitMatrizPulsadores pulsadores;
-```
-
-### Inicialización
-
-Luego, usamos el método `begin()` para inicializar el módulo con la dirección I2C que queramos asignar (por defecto es `0x27`):
-
-```
-pulsadores.begin(0x27);
-```
-
-### Lectura de pulsador
-
-Con el objeto `pulsadores` definido, podemos leer el estado de un pulsador específico utilizando el método `leerPulsador(Pin)`, donde `Pin` es el número del pulsador (0-15):
-
-```
-bool estado = pulsadores.leerPulsador(pin);
-```
-
-El valor devuelto será `true` si el pulsador está presionado, o `false` si no lo está.
-
-### Lectura de puertos
-
-Podemos leer el estado de un puerto completo de pulsadores (puerto A o puerto B) utilizando el método `leerPuerto()`. 
-
-- Para el Puerto A:
-
-```
-uint8_t estadoPuertoA = pulsadores.leerPuerto(true);
-```
-
-- Para el Puerto B:
-
-```
-uint8_t estadoPuertoB = pulsadores.leerPuerto(false);
-```
-
-### Lectura de todos los pulsadores
-
-Para leer el estado de todos los pulsadores en ambos puertos, podemos utilizar el método `leerPuertos()`:
-
-```
-uint16_t estadoTotal = pulsadores.leerPuertos();
-```
-
-### Interrupciones
-
-La librería soporta interrupciones, que permiten ejecutar funciones cuando un pulsador cambia su estado.
-
-#### Asignar interrupción en un pin
-
-Usamos el método `asignarPinInterrupcion()` para asignar una interrupción a un pulsador específico:
-
-```
-pulsadores.asignarPinInterrupcion(pin);
-```
-
-#### Asignar interrupción en un puerto
-
-Para asignar una interrupción a un puerto completo (A o B), usamos el método `asignarPuertoInterrupcion()`:
-
-```
-pulsadores.asignarPuertoInterrupcion(PUERTO_A);
-```
-
-#### Eliminar interrupción en un pin
-
-Si queremos eliminar la interrupción asignada a un pulsador específico, usamos el método `eliminarPinInterrupcion()`:
-
-```
-pulsadores.eliminarPinInterrupcion(pin);
-```
-
-#### Eliminar interrupción en un puerto
-
-De manera similar, podemos eliminar las interrupciones asignadas a un puerto completo utilizando el método `eliminarPuertoInterrupcion()`:
-
-```
-pulsadores.eliminarPuertoInterrupcion(PUERTO_A);
-```
-
-#### Configurar interrupción
-
-Para configurar la interrupción, debemos usar el método `configurarInterrupcion()`, donde elegimos si la interrupción se debe activar al presionar el pulsador o cuando cambia el estado:
-
-```
-pulsadores.configurarInterrupcion(Pin, PRESIONAR);  // Configura para que la interrupción ocurra cuando se presione el pulsador
-```
-
-#### Leer interrupción
-
-Para leer el valor de las interrupciones, utilizamos el método `leerInterrupcion()`:
-
-```
-uint16_t interrupciones = pulsadores.leerInterrupcion();
-```
-
-#### Leer último pin que causó una interrupción
-
-Finalmente, para saber qué pulsador causó la última interrupción, usamos el método `leerUltimoPinInterrupcion()`:
-
-```
-uint8_t pinInterrupcion = pulsadores.leerUltimoPinInterrupcion();
-```
+- **`MentorBitMatrizPulsadores()`**: Constructor de la clase.
+- **`begin(uint8_t i2c_addr)`**: Inicializa la librería con la dirección I2C del dispositivo.
+- **`leerPulsador(uint8_t Pin)`**: Obtiene el estado de un pulsador específico.
+- **`leerPuerto(bool Puerto)`**: Obtiene los valores del estado de un puerto de pulsadores (0-7 o 8-15).
+- **`leerPuertos()`**: Lee todos los pulsadores de ambos puertos (A y B).
+- **`asignarPinInterrupcion(uint8_t Pin)`**: Asigna una interrupción a un pulsador específico.
+- **`asignarPuertoInterrupcion(int8_t Puerto)`**: Asigna una interrupción a todos los pulsadores de un puerto específico.
+- **`eliminarPinInterrupcion(uint8_t Pin)`**: Elimina la interrupción de un pulsador específico.
+- **`eliminarPuertoInterrupcion(int8_t Puerto)`**: Elimina las interrupciones de todos los pulsadores de un puerto.
+- **`configurarInterrupcion(bool Pin, bool Estado)`**: Configura el tipo de interrupción para un pulsador específico.
+- **`leerInterrupcion()`**: Devuelve el estado de los pulsadores cuando ocurrió la interrupción.
+- **`leerUltimoPinInterrupcion()`**: Devuelve el número del pin que disparó la última interrupción.
 
 ## Atributos
 
-- **puerto_A**: Selecciona el puerto A.
-- **puerto_B**: Selecciona el puerto B.
-- **puerto_AB**: Selecciona ambos puertos A y B.
-- **int_separadas**: Interrupciones separadas para los puertos A y B.
-- **int_juntas**: Interrupciones unificadas para los puertos A y B.
-- **presionar**: Interrupción al presionar un botón.
-- **cambio**: Interrupción cuando cambia el estado de un botón.
+- **`PUERTO_A`**: Atributo que selecciona el puerto A.
+- **`PUERTO_B`**: Atributo que selecciona el puerto B.
+- **`PUERTO_AB`**: Atributo que selecciona ambos puertos A y B.
+- **`INT_SEPARADAS`**: Configura las interrupciones de los puertos A y B como separadas.
+- **`INT_JUNTAS`**: Unifica las interrupciones de los puertos A y B.
+- **`PRESIONAR`**: Configura el salto de las interrupciones cuando se presiona un botón.
+- **`CAMBIO`**: Configura el salto de las interrupciones cuando cambia el estado de un botón.
+
+## Métodos Detallados
+
+### `MentorBitMatrizPulsadores::MentorBitMatrizPulsadores()`
+
+Este es el constructor de la clase `MentorBitMatrizPulsadores`. No requiere parámetros.
+
+### `void MentorBitMatrizPulsadores::begin(uint8_t i2c_addr = 0x27)`
+
+Este método inicializa la comunicación I2C con la dirección proporcionada (por defecto `0x27`) y configura todos los pines como entradas.
+
+### `bool MentorBitMatrizPulsadores::leerPulsador(uint8_t Pin)`
+
+Lee el estado de un pulsador específico. Devuelve `true` si el pulsador está presionado y `false` si está en reposo.
+
+### `uint8_t MentorBitMatrizPulsadores::leerPuerto(bool Puerto)`
+
+Lee todos los pulsadores de un puerto específico. Si `Puerto` es `true`, lee el puerto A; si `Puerto` es `false`, lee el puerto B. Devuelve un valor de 8 bits, donde cada bit representa el estado de un pulsador.
+
+### `uint16_t MentorBitMatrizPulsadores::leerPuertos()`
+
+Lee todos los pulsadores de ambos puertos A y B, devolviendo un valor de 16 bits. Cada bit representa el estado de un pulsador en el sistema.
+
+### `void MentorBitMatrizPulsadores::asignarPinInterrupcion(uint8_t Pin)`
+
+Asigna una interrupción a un pulsador específico, activando la interrupción cuando el estado del pulsador cambie.
+
+### `void MentorBitMatrizPulsadores::asignarPuertoInterrupcion(int8_t Puerto)`
+
+Asigna una interrupción a todos los pulsadores de un puerto. Puedes asignar interrupciones para el puerto A, puerto B o ambos puertos.
+
+### `void MentorBitMatrizPulsadores::eliminarPinInterrupcion(uint8_t Pin)`
+
+Elimina la interrupción de un pulsador específico, desactivando cualquier evento relacionado.
+
+### `void MentorBitMatrizPulsadores::eliminarPuertoInterrupcion(int8_t Puerto)`
+
+Elimina las interrupciones de todos los pulsadores de un puerto. Puedes eliminar interrupciones para el puerto A, puerto B o ambos puertos.
+
+### `void MentorBitMatrizPulsadores::configurarInterrupcion(bool Pin, bool Estado)`
+
+Configura el tipo de interrupción para un pulsador específico. El parámetro `Estado` puede ser:
+- **`PRESIONAR`**: La interrupción ocurre cuando el pulsador es presionado.
+- **`CAMBIO`**: La interrupción ocurre cuando el estado del pulsador cambia.
+
+### `uint16_t MentorBitMatrizPulsadores::leerInterrupcion()`
+
+Devuelve un valor de 16 bits que indica el estado de todos los pulsadores cuando ocurrió la interrupción. Los bits corresponden a los pulsadores, con `1` indicando que el pulsador fue presionado.
+
+### `uint8_t MentorBitMatrizPulsadores::leerUltimoPinInterrupcion()`
+
+Devuelve el número del pin que disparó la última interrupción. El valor puede ser entre 0 y 15, representando el pin del pulsador.
