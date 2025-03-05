@@ -1,87 +1,77 @@
+# MentorBitMatrizPulsadores
 
-# MentorBit-MatrizPulsadores
-
-Esta librería está específicamente diseñada para ser utilizada junto con el módulo de matriz de pulsadores de MentorBit.
-
-Repositorio: [https://github.com/DigitalCodesign/MentorBit-MatrizPulsadores](https://github.com/DigitalCodesign/MentorBit-MatrizPulsadores)
+Librería para el control de una matriz de pulsadores mediante el expansor I2C MCP23017 en módulos compatibles con MentorBit.
 
 ## Descripción
 
-La librería permite interactuar con el módulo de matriz de pulsadores de MentorBit, gestionando el estado de los pulsadores, configurando interrupciones y gestionando eventos de los botones.
+La librería `MentorBitMatrizPulsadores` facilita la lectura de una matriz de pulsadores conectada a un módulo compatible con MentorBit que utiliza el expansor I2C MCP23017. Permite leer el estado de pulsadores individuales, leer el estado de todo un puerto (A o B), configurar interrupciones en pines o puertos específicos, y leer el estado de las interrupciones.
 
-## Métodos Principales
+**Nota:** La librería depende de la librería `Adafruit_MCP23X17`.
 
-- **`MentorBitMatrizPulsadores()`**: Constructor de la clase.
-- **`begin(uint8_t i2c_addr)`**: Inicializa la librería con la dirección I2C del dispositivo.
-- **`leerPulsador(uint8_t Pin)`**: Obtiene el estado de un pulsador específico.
-- **`leerPuerto(bool Puerto)`**: Obtiene los valores del estado de un puerto de pulsadores (0-7 o 8-15).
-- **`leerPuertos()`**: Lee todos los pulsadores de ambos puertos (A y B).
-- **`asignarPinInterrupcion(uint8_t Pin)`**: Asigna una interrupción a un pulsador específico.
-- **`asignarPuertoInterrupcion(int8_t Puerto)`**: Asigna una interrupción a todos los pulsadores de un puerto específico.
-- **`eliminarPinInterrupcion(uint8_t Pin)`**: Elimina la interrupción de un pulsador específico.
-- **`eliminarPuertoInterrupcion(int8_t Puerto)`**: Elimina las interrupciones de todos los pulsadores de un puerto.
-- **`configurarInterrupcion(bool Pin, bool Estado)`**: Configura el tipo de interrupción para un pulsador específico.
-- **`leerInterrupcion()`**: Devuelve el estado de los pulsadores cuando ocurrió la interrupción.
-- **`leerUltimoPinInterrupcion()`**: Devuelve el número del pin que disparó la última interrupción.
+## Modo de Empleo
 
-## Atributos
+1.  **Instalación:**
+    * Abre el IDE compatible con MentorBit.
+    * Ve a "Herramientas" -> "Gestionar librerías..."
+    * Busca "MentorBitMatrizPulsadores" e instálala.
+    * **Nota:** Asegúrate de que la librería `Adafruit_MCP23X17` esté instalada.
 
-- **`PUERTO_A`**: Atributo que selecciona el puerto A.
-- **`PUERTO_B`**: Atributo que selecciona el puerto B.
-- **`PUERTO_AB`**: Atributo que selecciona ambos puertos A y B.
-- **`INT_SEPARADAS`**: Configura las interrupciones de los puertos A y B como separadas.
-- **`INT_JUNTAS`**: Unifica las interrupciones de los puertos A y B.
-- **`PRESIONAR`**: Configura el salto de las interrupciones cuando se presiona un botón.
-- **`CAMBIO`**: Configura el salto de las interrupciones cuando cambia el estado de un botón.
+2.  **Ejemplo básico:**
 
-## Métodos Detallados
+    ```c++
+    #include <MentorBitMatrizPulsadores.h>
 
-### `MentorBitMatrizPulsadores::MentorBitMatrizPulsadores()`
+    MentorBitMatrizPulsadores matriz;
 
-Este es el constructor de la clase `MentorBitMatrizPulsadores`. No requiere parámetros.
+    void setup() {
+      Serial.begin(9600);
+      matriz.begin(); // Inicializa la matriz con la dirección I2C por defecto (0x27)
+    }
 
-### `void MentorBitMatrizPulsadores::begin(uint8_t i2c_addr = 0x27)`
+    void loop() {
+      // Lee el estado del pulsador en el pin 0
+      if (matriz.leerPulsador(0)) {
+        Serial.println("Pulsador 0 presionado");
+      }
 
-Este método inicializa la comunicación I2C con la dirección proporcionada (por defecto `0x27`) y configura todos los pines como entradas.
+      // Lee el estado de todos los pulsadores del puerto A
+      uint8_t estadoPuertoA = matriz.leerPuerto(matriz.PUERTO_A);
+      Serial.print("Estado del puerto A: ");
+      Serial.println(estadoPuertoA, BIN);
 
-### `bool MentorBitMatrizPulsadores::leerPulsador(uint8_t Pin)`
+      delay(100);
+    }
+    ```
 
-Lee el estado de un pulsador específico. Devuelve `true` si el pulsador está presionado y `false` si está en reposo.
+## Constructor y Métodos Públicos
 
-### `uint8_t MentorBitMatrizPulsadores::leerPuerto(bool Puerto)`
+### Constructor
 
-Lee todos los pulsadores de un puerto específico. Si `Puerto` es `true`, lee el puerto A; si `Puerto` es `false`, lee el puerto B. Devuelve un valor de 8 bits, donde cada bit representa el estado de un pulsador.
+* `MentorBitMatrizPulsadores()`: Crea un objeto `MentorBitMatrizPulsadores`.
 
-### `uint16_t MentorBitMatrizPulsadores::leerPuertos()`
+### Métodos
 
-Lee todos los pulsadores de ambos puertos A y B, devolviendo un valor de 16 bits. Cada bit representa el estado de un pulsador en el sistema.
+* `void begin(uint8_t i2c_addr = 0x27)`: Inicializa la comunicación I2C y configura los pines del MCP23017 como entradas.
+    * `i2c_addr`: Dirección I2C del MCP23017. El valor predeterminado es `0x27`.
+* `bool leerPulsador(uint8_t Pin)`: Lee el estado de un pulsador individual.
+    * `Pin`: Número del pin (0-15) del pulsador a leer.
+* `uint8_t leerPuerto(bool Puerto)`: Lee el estado de todos los pulsadores de un puerto.
+    * `Puerto`: `PUERTO_A` para leer el puerto A, `PUERTO_B` para leer el puerto B.
+* `uint16_t leerPuertos()`: Lee el estado de todos los pulsadores de ambos puertos.
+* `void asignarPinInterrupcion(uint8_t Pin)`: Configura un pin para generar interrupciones.
+    * `Pin`: Número del pin (0-15) a configurar.
+* `void asignarPuertoInterrupcion(int8_t Puerto)`: Configura un puerto para generar interrupciones.
+    * `Puerto`: `PUERTO_A`, `PUERTO_B` o `PUERTO_AB`.
+* `void eliminarPinInterrupcion(uint8_t Pin)`: Deshabilita las interrupciones en un pin.
+    * `Pin`: Número del pin (0-15).
+* `void eliminarPuertoInterrupcion(int8_t Puerto)`: Deshabilita las interrupciones en un puerto.
+    * `Puerto`: `PUERTO_A`, `PUERTO_B` o `PUERTO_AB`.
+* `void configurarInterrupcion(bool Pin, bool Estado)`: Configura el tipo de interrupción (por pulsación o por cambio de estado).
+    * `Pin`: `INT_SEPARADAS` para interrupciones separadas por pin, `INT_JUNTAS` para una interrupción común.
+    * `Estado`: `PRESIONAR` para interrupciones al presionar el pulsador, `CAMBIO` para interrupciones al cambiar el estado del pulsador.
+* `uint16_t leerInterrupcion()`: Lee el estado de las interrupciones.
+* `uint8_t leerUltimoPinInterrupcion()`: Devuelve el último pin que generó una interrupción.
 
-### `void MentorBitMatrizPulsadores::asignarPinInterrupcion(uint8_t Pin)`
+### Constantes Públicas
 
-Asigna una interrupción a un pulsador específico, activando la interrupción cuando el estado del pulsador cambie.
-
-### `void MentorBitMatrizPulsadores::asignarPuertoInterrupcion(int8_t Puerto)`
-
-Asigna una interrupción a todos los pulsadores de un puerto. Puedes asignar interrupciones para el puerto A, puerto B o ambos puertos.
-
-### `void MentorBitMatrizPulsadores::eliminarPinInterrupcion(uint8_t Pin)`
-
-Elimina la interrupción de un pulsador específico, desactivando cualquier evento relacionado.
-
-### `void MentorBitMatrizPulsadores::eliminarPuertoInterrupcion(int8_t Puerto)`
-
-Elimina las interrupciones de todos los pulsadores de un puerto. Puedes eliminar interrupciones para el puerto A, puerto B o ambos puertos.
-
-### `void MentorBitMatrizPulsadores::configurarInterrupcion(bool Pin, bool Estado)`
-
-Configura el tipo de interrupción para un pulsador específico. El parámetro `Estado` puede ser:
-- **`PRESIONAR`**: La interrupción ocurre cuando el pulsador es presionado.
-- **`CAMBIO`**: La interrupción ocurre cuando el estado del pulsador cambia.
-
-### `uint16_t MentorBitMatrizPulsadores::leerInterrupcion()`
-
-Devuelve un valor de 16 bits que indica el estado de todos los pulsadores cuando ocurrió la interrupción. Los bits corresponden a los pulsadores, con `1` indicando que el pulsador fue presionado.
-
-### `uint8_t MentorBitMatrizPulsadores::leerUltimoPinInterrupcion()`
-
-Devuelve el número del pin que disparó la última interrupción. El valor puede ser entre 0 y 15, representando el pin del pulsador.
+* `PUERTO_A`, `PUERTO_B`, `PUERTO_AB`, `INT_SEPARADAS`, `INT_JUNTAS`, `PRESIONAR`, `CAMBIO`: Constantes para configurar las interrupciones y leer los puertos.
